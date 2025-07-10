@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
             Movement();
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && bulletPrefabClone == null)
         {
             Fire();
         }
