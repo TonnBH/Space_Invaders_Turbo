@@ -13,6 +13,7 @@ public class EnemyController : MonoBehaviour
 
     float fireRate = 0;
     float timeOfFire = 0.1f;
+    float maxY = -3.0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -23,16 +24,19 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timer += Time.deltaTime;
-        MoveHorizontally();
-        MoveVertically();        
-
-        fireRate += Time.deltaTime;
-
-        if (fireRate > timeOfFire)
+        if (GameManager.instance.playGame == true)
         {
-            FireEnemyProjectile();
-            fireRate = 0;
+            timer += Time.deltaTime;
+            MoveHorizontally();
+            MoveVertically();
+
+            fireRate += Time.deltaTime;
+
+            if (fireRate > timeOfFire)
+            {
+                FireEnemyProjectile();
+                fireRate = 0;
+            }
         }
     }
 
@@ -54,6 +58,13 @@ public class EnemyController : MonoBehaviour
             numOfMovement = 0;
             timer = 0;
             movementAmount *= -1; // Reverse direction
+
+            if (transform.position.y < maxY)
+            {
+                GameManager.instance.gameOver = true; // Stop the game if enemies reach the bottom
+                GameManager.instance.playGame = false; // Set game state to not playing
+                Debug.Log("Enemies reached the bottom! Game Over.");
+            }
         }
     }
 

@@ -22,6 +22,8 @@ public class PlayerProjectileController : MonoBehaviour
     {
         collision.gameObject.SetActive(false);
         Destroy(gameObject);
+        GameManager.instance.playGame = true; // Set game state to playing
+        GameManager.instance.enemyCount--; // Decrease enemy count when projectile hits an enemy
+        GameManager.instance.score += 10; // Increase score by 10 when an enemy is hit
     }
 }
-
