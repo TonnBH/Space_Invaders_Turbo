@@ -33,6 +33,11 @@ public class GameManager : MonoBehaviour
     public GameObject Level_3Off;
     public TMP_Text levelText;
 
+    [Header("Main Menu Settings")]
+    public GameObject startGamePanel;
+    const int freezeGame = 0; // Constant to pause the game
+    const int unfreezeGame = 1; // Constant to unpause the game
+
     int level = 1; // Current level of the game
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -42,6 +47,8 @@ public class GameManager : MonoBehaviour
         instance = this; // Singleton pattern to access GameManager from other scripts
 
         LevelDisplay(level);
+        startGamePanel.SetActive(true); // Show the start game panel
+        Time.timeScale = freezeGame; // Freeze the game at the start
     }
 
     // Update is called once per frame
@@ -84,6 +91,15 @@ public class GameManager : MonoBehaviour
                 newEnemy.transform.position = new Vector3(i * offSet.x - 5.5f, j * offSet.y + 0.8f, 0); 
                 enemyCount++;
             }
+        }
+    }
+
+    public void Restart()
+    {
+        if (startGamePanel.activeInHierarchy)
+        {
+            startGamePanel.SetActive(false); // Hide the start game panel
+            Time.timeScale = unfreezeGame; // Unfreeze the game
         }
     }
 
