@@ -40,6 +40,13 @@ public class GameManager : MonoBehaviour
 
     int level = 1; // Current level of the game
 
+    [Header("End Game")]
+    public GameObject endGamePanel; // Panel to show when the game ends
+    public TMP_Text gameOverText;
+
+    [Header("Exit game")]
+    public GameObject exitGamePanel; // Panel to show when the game ends
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -65,7 +72,7 @@ public class GameManager : MonoBehaviour
             playGame = false; // Set game state to not playing when player health is zero
             lifeLost = false; // Reset the life lost flag
             gameOver = false; // Reset the game over flag
-            Debug.Log("Game Over!"); // Log game over message
+            EndGame(); // Call the EndGame method to show the end game panel
         }
 
         else if (lifeLost)
@@ -75,10 +82,24 @@ public class GameManager : MonoBehaviour
             lifeLost = false; // Reset the life lost flag                   
         }
 
-        if (enemyCount <= 0 && playGame)
+        if (enemyCount == 0 && playGame)
         {
             playGame = false; // Set game state to not playing when all enemies are defeated
-            Debug.Log("All enemies defeated! You win!"); // Log win message
+            gameOverText.text = "You Win!"; // Update the game over text
+            endGamePanel.SetActive(true); // Show the end game panel
+            Time.timeScale = freezeGame; // Freeze the game                                          
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape) && !startGamePanel.activeInHierarchy && !endGamePanel.activeInHierarchy)
+        {
+            if (exitGamePanel.activeInHierarchy)
+            {
+                NoExit(); // Hide the exit game panel
+            }
+            else
+            {
+                ExitPrompt(); // Show the exit game panel
+            }
         }
     }
     void DrawEnemies()
@@ -99,6 +120,12 @@ public class GameManager : MonoBehaviour
         if (startGamePanel.activeInHierarchy)
         {
             startGamePanel.SetActive(false); // Hide the start game panel
+            Time.timeScale = unfreezeGame; // Unfreeze the game
+        }
+
+        if(endGamePanel.activeInHierarchy)
+        {
+            endGamePanel.SetActive(false); // Hide the end game panel
             Time.timeScale = unfreezeGame; // Unfreeze the game
         }
     }
@@ -138,5 +165,31 @@ public class GameManager : MonoBehaviour
         }
 
         levelText.text = newLevel.ToString("0"); // Update the level text
+    }
+
+    void EndGame()
+    {
+        endGamePanel.SetActive(true); // Show the end game panel
+        gameOverText.text = "Game Over!"; // Update the game over text
+        Time.timeScale = freezeGame; // Freeze the game
+        //playGame = false; // Set game state to not playing
+    }
+
+    public void ExitPrompt()
+    {
+        exitGamePanel.SetActive(true); // Show the exit game panel
+        Time.timeScale = freezeGame; // Freeze the game
+    }
+
+    public void NoExit()
+    {
+        exitGamePanel.SetActive(false); // Hide the exit game panel
+        Time.timeScale = unfreezeGame; // Unfreeze the game
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit(); // Exit the application
+        Debug.Log("Game exited"); // Log the exit action
     }
 }
