@@ -15,6 +15,8 @@ public class EnemyController : MonoBehaviour
     float timeOfFire = 0.1f;
     float maxY = -3.0f;
 
+    GameManager gameManager;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -38,11 +40,20 @@ public class EnemyController : MonoBehaviour
                 fireRate = 0;
             }
         }
+
+        if(GameManager.instance.resetTimers == true)
+        {
+            timer = 0;
+            numOfMovement = 0;
+            fireRate = 0; // Reset fire rate
+            movementAmount = Mathf.Abs(movementAmount); // Reset movement amount
+            GameManager.instance.timerResetCount++; // Reset the flag
+        }
     }
 
     void MoveHorizontally()
     {
-        if(timer > 0.5f && numOfMovement != 17)
+        if(timer > GameManager.instance.enemySpeed && numOfMovement != 15)
         {
            transform.Translate(new Vector3(movementAmount, 0, 0));
            timer = 0;
@@ -52,25 +63,24 @@ public class EnemyController : MonoBehaviour
 
     void MoveVertically() 
     {
-        if (numOfMovement == 17)
+        if (timer > GameManager.instance.enemySpeed && numOfMovement == 15)
         {
-            transform.Translate(new Vector3(0, -0.1f, 0));
+            transform.Translate(0, -1f, 0);
             numOfMovement = 0;
             timer = 0;
-            movementAmount *= -1; // Reverse direction
+            movementAmount = -movementAmount; // Reverse direction
 
             if (transform.position.y < maxY)
             {
                 GameManager.instance.gameOver = true; // Stop the game if enemies reach the bottom
-                GameManager.instance.playGame = false; // Set game state to not playing
-                Debug.Log("Enemies reached the bottom! Game Over.");
+                GameManager.instance.playGame = false; // Set game state to not playing                
             }
         }
     }
 
     void FireEnemyProjectile()
     {
-        if (Random.Range(0f, 125f) < 1) 
+        if (Random.Range(0f, GameManager.instance.enemyFireRate) < 1)
         {
             bulletPrefabClone = Instantiate(bulletPrefab, new Vector3(transform.position.x, transform.position.y - 0.6f), transform.rotation);
         }

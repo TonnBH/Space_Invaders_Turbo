@@ -1,5 +1,7 @@
 using UnityEngine;
 using TMPro;
+using System;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -47,6 +49,22 @@ public class GameManager : MonoBehaviour
     [Header("Exit game")]
     public GameObject exitGamePanel; // Panel to show when the game ends
 
+    [Header("Game Manager Updates")]
+    //public int hitPoints;
+    public int timerResetCount;
+    public float enemySpeed;
+    public float enemyFireRate;
+    public bool resetTimers;
+    //public float levelEnemyFirerate = 158f; // Fire rate for enemies in the current level
+
+    Vector3 EnemyRespawn = new Vector3(-1.6f, -4.5f, 0); // Respawn position for the player
+    bool gameStart = true;
+    bool resetEnemies;
+
+    [Header("Reset Player")]
+    public GameObject player; // Reference to the player GameObject that will be reset
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -84,10 +102,18 @@ public class GameManager : MonoBehaviour
 
         if (enemyCount == 0 && playGame)
         {
-            playGame = false; // Set game state to not playing when all enemies are defeated
-            gameOverText.text = "You Win!"; // Update the game over text
-            endGamePanel.SetActive(true); // Show the end game panel
-            Time.timeScale = freezeGame; // Freeze the game                                          
+            if (level == 3)
+            {
+                playGame = false; // Set game state to not playing when all enemies are defeated
+                gameOverText.text = "You Win!"; // Update the game over text
+                endGamePanel.SetActive(true); // Show the end game panel
+                Time.timeScale = freezeGame; // Freeze the game         
+            }
+            else
+            {
+                playGame = false; // Set game state to not playing when all enemies are defeated
+                LevelUp(); // Call the LevelUp method to advance to the next level              
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Escape) && !startGamePanel.activeInHierarchy && !endGamePanel.activeInHierarchy)
@@ -115,6 +141,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void ResetEnemies()
+    {
+        enemyCount = 0; // Reset the enemy count
+        for (int i = 0; i < size.x; i++)
+        {
+            for (int j = 0; j < size.y; j++)
+            {
+                enemies.transform.GetChild(enemyCount).gameObject.SetActive(true); // Activactrd existing enemies
+                enemies.transform.GetChild(enemyCount).position = new Vector3(i * offSet.x - 5.5f, j * offSet.y + 0.8f, 0);
+                enemyCount++;
+            }
+        } 
+
+        resetEnemies = false; // Reset the reset enemies flag
+    }
+
     public void Restart()
     {
         if (startGamePanel.activeInHierarchy)
@@ -128,7 +170,72 @@ public class GameManager : MonoBehaviour
             endGamePanel.SetActive(false); // Hide the end game panel
             Time.timeScale = unfreezeGame; // Unfreeze the game
         }
+
+        level = 1; // Reset the level to 1
+        LevelDisplay(level); // Update the level display
+        score = 0; // Reset the score
+        scoreText.text = score.ToString("00000"); // Update the score text        
     }
+
+    public void ResetGame()
+    {
+       StopAllCoroutines(); // Stop all running coroutines
+       StartCoroutine(GameReset()); // Start the GameReset coroutine
+    }
+    IEnumerator GameReset()
+    {
+        GameObject[] objectsToDestroy;
+        objectsToDestroy = GameObject.FindGameObjectsWithTag("Projectile"); // Find and destroy all projectiles in the scene
+
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            Destroy(obj); // Destroy each projectile
+        }
+
+        for (int i = 0; i <= 4; i++)
+        {
+            playerLifes[i].SetActive(true); // Reset player lives
+        }
+
+        resetEnemies = true; // Set the reset enemies flag to true
+        ResetEnemies(); // Reset the enemies
+
+        while (resetEnemies)
+        {
+            yield return null; // Wait until enemies are reset
+        }
+
+        timerResetCount = 0; // Reset the timer reset count
+        resetTimers = true; // Set the reset timers flag to true
+
+        while (timerResetCount < enemyCount)
+        {
+            yield return null; // Wait until timers are reset
+        }
+
+        resetTimers = false; // Reset the reset timers flag
+        player.transform.position = respawn; // Reset the player's position
+    }
+
+    void LevelUp(){
+        level++; // Increment the level
+        LevelDisplay(level); // Update the level display
+        if (level == 2)
+        {
+            //enemyFireRate = levelEnemyFirerate / 2; // Adjust fire rate for level 2
+            //enemySpeed = enemySpeed * 1.5f; // Increase enemy speed for level 2
+            ResetGame(); // Reset the game for the new level
+        }
+        else if (level == 3)
+        {
+            //enemyFireRate = levelEnemyFirerate / 3; // Adjust fire rate for level 3
+            //enemySpeed = enemySpeed * 2f; // Increase enemy speed for level 3
+            ResetGame(); // Reset the game for the new level
+        }
+        // Reset enemies and timers if needed
+        resetEnemies = true;
+        resetTimers = true;
+    }    
 
     void ScoreSystem() 
     {
@@ -189,7 +296,6 @@ public class GameManager : MonoBehaviour
 
     public void ExitGame()
     {
-        Application.Quit(); // Exit the application
-        Debug.Log("Game exited"); // Log the exit action
+        Application.Quit(); // Exit the application        
     }
 }
