@@ -16,9 +16,9 @@ public class GameManager : MonoBehaviour
 
     [Header("Player Health")]
     public bool lifeLost = false; // Flag to check if a life is lost
+    public int playerHealth = 3; // Player's health
     [HideInInspector] public bool playGame; // Flag to check if the game is over
     [SerializeField] GameObject[] playerLifes; // Reference to the player GameObject
-    [SerializeField] int playerHealth = 3; // Player's health
     [HideInInspector] public Vector3 respawn = new Vector3(-1.6f, -4.5f, 0); // Respawn position for the player
 
     GameObject newEnemy;

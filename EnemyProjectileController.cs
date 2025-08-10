@@ -21,7 +21,11 @@ public class EnemyProjectileController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            collision.gameObject.transform.position = GameManager.instance.respawn; // Deactivate player
+            SoundEffectManager.Play("PlayerHit");
+            if (!(GameManager.instance.playerHealth == 0)) 
+            { 
+                collision.gameObject.transform.position = GameManager.instance.respawn; // Deactivate player            
+            }
             Destroy(gameObject); // Destroy the projectile
             GameManager.instance.lifeLost = true; // Set life lost flag to true
             GameManager.instance.playGame = false; // Set game state to not playing 

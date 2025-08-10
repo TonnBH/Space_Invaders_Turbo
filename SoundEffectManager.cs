@@ -8,6 +8,7 @@ public class SoundEffectManager : MonoBehaviour
     static AudioSource audioSource;
     static SoundEffectLibrary soundEffectLibrary;
     [SerializeField] Slider sfxSlider;
+    [SerializeField] bool soundOn = true;    
 
     private void Awake()
     {
@@ -22,6 +23,20 @@ public class SoundEffectManager : MonoBehaviour
         {
             Destroy(gameObject); // Ensure only one instance exists
         }
+    }
+
+    private void Update()
+    {        
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            ToggleAllAudio();            
+        }
+    }
+    public void ToggleAllAudio()
+    {
+        soundOn = !soundOn;
+        AudioListener.volume = soundOn ? 0f : 1f;
+        Debug.Log("Audio " + (soundOn ? "Muted" : "Unmuted"));
     }
 
     public static void Play(string soundName)
