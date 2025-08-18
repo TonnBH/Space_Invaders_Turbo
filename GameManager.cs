@@ -18,8 +18,7 @@ public class GameManager : MonoBehaviour
     public bool lifeLost = false; // Flag to check if a life is lost
     public int playerHealth = 3; // Player's health
     [HideInInspector] public bool playGame; // Flag to check if the game is over
-    [SerializeField] GameObject[] playerLifes; // Reference to the player GameObject
-    [HideInInspector] public Vector3 respawn = new Vector3(-1.6f, -4.5f, 0); // Respawn position for the player
+    [SerializeField] GameObject[] playerLifes; // Reference to the player GameObject    
 
     GameObject newEnemy;
     public bool gameOver = false; // Flag to check if the game is over
@@ -85,7 +84,7 @@ public class GameManager : MonoBehaviour
 
     private void LifeLostUpdate()
     {
-        if((lifeLost && playerHealth <= 0) || gameOver)
+        if((lifeLost && playerHealth < 0) || gameOver)
         {
             playGame = false; // Set game state to not playing when player health is zero
             lifeLost = false; // Reset the life lost flag
@@ -174,13 +173,17 @@ public class GameManager : MonoBehaviour
         level = 1; // Reset the level to 1
         LevelDisplay(level); // Update the level display
         score = 0; // Reset the score
-        scoreText.text = score.ToString("00000"); // Update the score text        
+        scoreText.text = score.ToString("00000"); // Update the score text
+        playerHealth = 3; // Reset player health
+        playerLifes[0].SetActive(true); // Activate the first life
+        playerLifes[1].SetActive(true); // Activate the second life
+        playerLifes[2].SetActive(true); // Activate the third life        
     }
 
     public void ResetGame()
     {
-       StopAllCoroutines(); // Stop all running coroutines
        StartCoroutine(GameReset()); // Start the GameReset coroutine
+       StopAllCoroutines(); // Stop all running coroutines
     }
     IEnumerator GameReset()
     {
@@ -196,6 +199,8 @@ public class GameManager : MonoBehaviour
         {
             playerLifes[i].SetActive(true); // Reset player lives
         }
+
+        playerHealth = 3; // Reset player health 
 
         resetEnemies = true; // Set the reset enemies flag to true
         ResetEnemies(); // Reset the enemies
@@ -213,8 +218,7 @@ public class GameManager : MonoBehaviour
             yield return null; // Wait until timers are reset
         }
 
-        resetTimers = false; // Reset the reset timers flag
-        player.transform.position = respawn; // Reset the player's position
+        resetTimers = false; // Reset the reset timers flag        
     }
 
     void LevelUp(){

@@ -23,8 +23,7 @@ public class PlayerProjectileController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         collision.gameObject.SetActive(false);
-        SoundEffectManager.Play("EnemyHit"); // Play enemy hit sound effect
-        Debug.Log("Projectile hit an enemy: " + collision.gameObject.name);
+        SoundEffectManager.Play("EnemyHit"); // Play enemy hit sound effect        
         Destroy(gameObject);
         GameManager.instance.playGame = true; // Set game state to playing
         GameManager.instance.enemyCount--; // Decrease enemy count when projectile hits an enemy

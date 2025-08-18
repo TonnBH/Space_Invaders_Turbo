@@ -41,8 +41,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && bulletPrefabClone == null)
         {
             Fire(); 
-            SoundEffectManager.Play("PlayerFire"); // Play Player fire sound effect
-            Debug.Log("Player attack an enemy");
+            SoundEffectManager.Play("PlayerFire"); // Play Player fire sound effect\            
         }
     }
 
